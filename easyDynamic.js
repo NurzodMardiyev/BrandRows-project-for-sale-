@@ -1,5 +1,10 @@
 "use strict";
 
+const users = localStorage.getItem("users");
+if (!users) {
+  location.href = "./logiin/index.html";
+}
+
 window.addEventListener("load", () => {
   // Start
 
