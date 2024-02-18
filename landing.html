@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brand Page</title>
+    <link rel="stylesheet" href="./landstyle.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!--? header section -->
+    <header id="header">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+          <div
+            class="container-fluid d-flex align-items-center justify-content-between menu__box"
+          >
+            <a class="navbar-brand" href="#">BrandRows</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div
+              class="collapse navbar-collapse menu_contents"
+              id="navbarSupportedContent"
+            >
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li
+                  class="nav-item position-relative d-flex flex-column nav__item"
+                >
+                  <div
+                    class="nav-link ms-4 d-flex align-items-center"
+                    id="liveCountry"
+                  >
+                    <i class="fa fa-location-dot"></i
+                    ><span class="ms-2 fs-6 text-capitalize">Samarqand</span>
+                  </div>
+                  <select
+                    class="form-select position-absolute top-100 start-0 ms-4"
+                    aria-label="Default select example"
+                    id="whichCountry"
+                  >
+                    <option selected>Samarqand</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Farg'ona">Farg'ona</option>
+                    <option value="Xorazm">Xorazm</option>
+                  </select>
+                </li>
+              </ul>
+              <form
+                class="d-flex search__form align-items-center"
+                role="search"
+              >
+                <div
+                  class="basket me-5 position-relative"
+                  id="basketIcon"
+                  href="#"
+                >
+                  <button
+                    class="btn btn-outline-success"
+                    style="
+                      padding: 0;
+                      --bs-btn-border-color: none !important;
+                      --bs-btn-hover-bg: none !important;
+                      --bs-btn-active-bg: none !important;
+                    "
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight"
+                    aria-controls="offcanvasRight"
+                  >
+                    <i class="fa fa-basket-shopping fs-4 text-dark"></i>
+                  </button>
+                  <span class="counter__shop">0</span>
+                </div>
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <button class="btn btn-outline-success" type="submit">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </form>
+              <button
+                class="btn btn-outline-success ms-3"
+                id="addProductBtn"
+                type="submit"
+              >
+                Add Product
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <!--? end of header -->
+
+    <!-- ? Main Section -->
+    <main id="main" style="display: block">
+      <div class="container">
+        <div class="container-fluid">
+          <h1 class="mt-5 tittle">Products</h1>
+          <div
+            class="cards__box d-flex justify-content-between flex-wrap"
+            id="product__list"
+          >
+            <div class="card mt-3" style="width: 18rem">
+              <img
+                src="data:image/jpeg;base64,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"
+                class="card-img-top"
+                alt="shoes"
+              />
+              <div class="card-body position-relative">
+                <h5 class="card-title">Chanel</h5>
+                <p class="card-text">12$</p>
+                <button
+                  class="btn btn-success position-absolute card__basket"
+                  id="counter__plus"
+                >
+                  <i class="fa fa-basket-shopping"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- ?End of main -->
+
+    <!-- ?Apply Section -->
+    <section id="apply" class="apply">
+      <div class="container">
+        <div
+          class="apply__head d-flex justify-content-between align-items-center mt-3 border-bottom pb-2"
+        >
+          <h2 class="fs-5">Your Card</h2>
+          <button class="btn btn-outline-success" id="closeApply">
+            <i class="fa fa-close"></i>
+          </button>
+        </div>
+        <div class="apply__products">
+          <!-- product in apply Card -->
+
+          <!-- button apply -->
+        </div>
+        <div class="position-relative bottom-0 w-100">
+          <button class="btn btn-success w-100 mt-3 mb-4">Checkout</button>
+        </div>
+      </div>
+    </section>
+
+    <!--? Card Popap -->
+    <section class="popap mt-5" style="display: none">
+      <div class="container">
+        <div
+          class="container-fluid d-flex gap-5 align-items-center product-sec position-relative"
+        >
+          <div class="product__img w-50 p-3 py-4">
+            <img
+              src="https://avatars.mds.yandex.net/i?id=e19d888bd987ac8b11f7e704f63f3edc416fdcfd-10814666-images-thumbs&n=13"
+              alt="shoe1"
+            />
+          </div>
+          <div class="product__info w-50">
+            <h3 class="product_title">Nike Air</h3>
+            <p class="price">125$</p>
+            <p class="line"></p>
+            <span class="Co">Count:</span>
+            <div class="howMany">
+              <button class="btn btn-outline-success">
+                <i class="fa fa-plus"></i>
+              </button>
+              <span class="many mx-2 fw-medium">20</span>
+              <button class="btn btn-outline-success">
+                <i class="fa fa-minus"></i>
+              </button>
+            </div>
+            <span class="Co mt-4">Color:</span>
+            <div class="colors d-flex gap-2">
+              <span id="green" class="color bg-success"></span>
+              <span id="red" class="color bg-danger"></span>
+              <span id="yellow" class="color bg-warning"></span>
+            </div>
+            <div class="order mt-3 d-flex gap-2">
+              <button class="btn btn-success">Order Now</button>
+              <button class="btn btn-outline-success">
+                <i class="fa fa-basket-shopping"></i>
+              </button>
+            </div>
+          </div>
+          <div class="page__closer position-absolute">
+            <button class="btn btn-outline-success">
+              <i class="fa fa-close"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ? End of Popap -->
+
+    <!-- ?Admin Card -->
+    <section class="popap mt-5" id="popapAdmin" style="display: none">
+      <div class="container">
+        <form
+          id="adminCardForm"
+          class="container-fluid d-flex gap-5 p-3 product-sec position-relative"
+        >
+          <div class="w-50">
+            <div class="enter__name">
+              <h2>Name</h2>
+              <label for="enterName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="enterName" />
+            </div>
+            <div class="enter__images">
+              <h2>Images</h2>
+              <label for="image1" class="form-label">1 - image</label>
+              <input type="text" class="form-control" id="image1" />
+              <label for="image2" class="form-label">2 - image</label>
+              <input type="text" class="form-control" id="image2" />
+              <label for="image3" class="form-label">3 - image</label>
+              <input type="text" class="form-control" id="image3" />
+            </div>
+          </div>
+          <div class="w-50">
+            <div class="enter__price">
+              <h2>Price</h2>
+              <label for="enterPrice" class="form-label">Price</label>
+              <input type="text" class="form-control" id="enterPrice" />
+            </div>
+            <div class="enter__count">
+              <h2>How Many</h2>
+              <label for="enterMany" class="form-label">Many</label>
+              <input type="text" class="form-control" id="enterMany" />
+            </div>
+            <button class="btn btn-success mt-4 end-0">Add to Card</button>
+          </div>
+          <div class="page__closer position-absolute">
+            <button
+              type="button"
+              class="btn btn-outline-success"
+              id="closeAdminCard"
+            >
+              <i class="fa fa-close"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+    <!-- ?End of Admin Card -->
+
+    <!-- ?Footer -->
+    <footer id="footer" class="mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <p class="text-center my-2 py-2">@Nurzod Mardiyev</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!--? End of Footer -->
+
+    <script src="./easyDynamic.js"></script>
+    <script src="./hardDynamic.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font awesome -->
+    <script
+      src="https://kit.fontawesome.com/7cab7ed7b4.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
