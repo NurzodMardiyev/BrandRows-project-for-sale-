@@ -45,11 +45,9 @@ formSignIn.addEventListener("submit", async (event) => {
 
   usersDB.forEach((user) => {
     if (user.email == email && user.password == password) {
-      window.location.href = "../landing.html";
+      window.location.href = "../Page/landing.html";
     } else {
       alert("Wrong username or password");
-      console.log(username);
-      console.log(typeof password);
     }
   });
 });

@@ -2,7 +2,7 @@
 
 const users = localStorage.getItem("users");
 if (!users) {
-  location.href = "./logiin/index.html";
+  location.href = "../index.html";
 }
 
 window.addEventListener("load", () => {
