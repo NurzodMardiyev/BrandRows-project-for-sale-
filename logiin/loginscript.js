@@ -11,35 +11,34 @@ loginBtn.addEventListener("click", () => {
 
 // !======================Sign Up=========================
 const createAccount = document.querySelector("#createAccount");
-// const content = document.querySelector(".content");
+
 createAccount.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const phone = event.target[0],
-    password = event.target[1];
+  const phoneIn = event.target[0],
+    passwordIn = event.target[1];
 
-  console.log(password);
   // Set Data to Backend
   try {
-    const res = await fetch("https://bd.minimatch.uz/users", {
+    const resEl = await fetch("https://bd.minimatch.uz/users", {
       method: "POST",
-      mode: "no-cors",
-
       headers: {
         "Content-Type": "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify({
-        phone: phone.value,
-        password: password.value,
+        phone: phoneIn.value,
+        password: passwordIn.value,
       }),
     });
-    if (!res.ok) {
+
+    if (!resEl.ok) {
       throw new Error("Error something Api");
     }
-    const data = await res.json();
+
+    // Agar serverdan JSON javobi kelmasa, u holda bu qatorni o'chirib tashlang
+    const data = await resEl.json();
+    alert("successfull");
     console.log(data);
-    createAccount.reset();
   } catch (error) {
     console.error("Error", error);
     console.log(error.message);
@@ -48,37 +47,36 @@ createAccount.addEventListener("submit", async (event) => {
 
 // !======================Sign In=========================
 
-// const formSignIn = document.querySelector("#formSignIn");
+const formSignIn = document.querySelector("#formSignIn");
 
-// formSignIn.addEventListener("submit", async (event) => {
-//   event.preventDefault();
+formSignIn.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-//   const phone = event.target[0],
-//     password = event.target[1];
+  const phoneIn = event.target[0],
+    passwordIn = event.target[1];
 
-//   try {
-//     const res = await fetch("https://bd.minimatch.uz/auth/login", {
-//       method: "POST",
-//       mode: "no-cors",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: {
-//         phone: phone.value,
-//         password: password.value,
-//       },
-//     });
-//     if (!res.ok) {
-//       const failed = document.querySelector("#failed");
-//       failed.style.borderColor = "red";
-//       throw new Error("Error something Api");
-//     }
-//     const data = await res.json();
-//     console.log(data);
-//     localStorage.setItem("token", data.token);
-//     location.href = "./index.html";
-//     formSignIn.reset();
-//   } catch (error) {
-//     console.error("Error", error);
-//   }
-// });
+  try {
+    const res = await fetch("https://bd.minimatch.uz/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        phone: phoneIn.value,
+        password: passwordIn.value,
+      }),
+    });
+    if (!res.ok) {
+      const failed = document.querySelector("#failed");
+      failed.style.borderColor = "red";
+      throw new Error("Error something Api");
+    }
+    const data = await res.json();
+    console.log(data);
+    localStorage.setItem("token", data.token);
+    location.href = "./Page/landing.html";
+    formSignIn.reset();
+  } catch (error) {
+    console.log("Error", error);
+  }
+});

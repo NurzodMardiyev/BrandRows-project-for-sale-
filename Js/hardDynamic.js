@@ -7,35 +7,57 @@ const counter__shop = document.querySelector(".counter__shop");
 
 const productDB = JSON.parse(localStorage.getItem("product")) || [];
 
-const API =
-  "https://crudcrud.com/api/825e47e13d834dccb77866ce48760504/products";
-
-adminForm.addEventListener("submit", (event) => {
+adminForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const productName = event.target[0],
     productImage1 = event.target[1],
-    productImage2 = event.target[2],
-    productImage3 = event.target[3],
-    productPrice = event.target[4],
-    productQuentity = event.target[5];
+    productPrice = event.target[4].value,
+    productDesc = event.target[5];
 
   const productDBObj = {
     id: productDB.length,
     isBasket: false,
     productName: productName.value,
     productImage1: productImage1.value,
-    productImage2: productImage2.value,
-    productImage3: productImage3.value,
-    productPrice: productPrice.value,
-    productQuentity: productQuentity.value,
+    productPrice: productPrice,
+    productDesc: productDesc.value,
     counting: localStorage.getItem("count") || 0,
   };
+  let token = localStorage.getItem("token");
+  // let token = JSON.parse(get);
+  console.log("Bearer " + token);
+  console.log(productName.value);
+  console.log(productPrice);
+  console.log(productDesc.value);
 
-  productDB.push(productDBObj);
-  localStorage.setItem("product", JSON.stringify(productDB));
-  renderFromAdmin();
-  adminForm.reset();
-  popapAdmin.style.display = "none";
+  try {
+    const res = await fetch("https://bd.minimatch.uz/products", {
+      method: "POST",
+      headers: {
+        authorization: "Beader " + token,
+      },
+      body: JSON.stringify({
+        name: productName.value,
+        images: productImage1.value,
+        description: productDesc.value,
+        price: productPrice,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error("Error something Api");
+    }
+    const data = await res.json();
+    console.log(data);
+    productDB.push(productDBObj);
+    localStorage.setItem("product", JSON.stringify(productDB));
+    renderFromAdmin();
+    adminForm.reset();
+    popapAdmin.style.display = "none";
+  } catch {
+    console.error("error");
+
+    console.log(localStorage.getItem("token"));
+  }
 });
 
 // Create in Html from data basa

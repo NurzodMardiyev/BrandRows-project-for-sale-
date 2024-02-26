@@ -1,6 +1,6 @@
 "use strict";
 
-const users = localStorage.getItem("users");
+const users = localStorage.getItem("token");
 if (!users) {
   location.href = "../index.html";
 }
