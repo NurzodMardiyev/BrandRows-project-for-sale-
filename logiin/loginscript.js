@@ -11,43 +11,74 @@ loginBtn.addEventListener("click", () => {
 
 // !======================Sign Up=========================
 const createAccount = document.querySelector("#createAccount");
-const content = document.querySelector(".content");
-const usersDB = JSON.parse(localStorage.getItem("users")) || [];
+// const content = document.querySelector(".content");
 createAccount.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const username = event.target[0],
-    email = event.target[1],
-    password = event.target[2];
+  const phone = event.target[0],
+    password = event.target[1];
 
+  console.log(password);
   // Set Data to Backend
+  try {
+    const res = await fetch("https://bd.minimatch.uz/users", {
+      method: "POST",
+      mode: "no-cors",
 
-  let usersObj = {
-    username: username.value,
-    email: email.value,
-    password: password.value,
-  };
-
-  usersDB.push(usersObj);
-  localStorage.setItem("users", JSON.stringify(usersDB));
-  createAccount.reset();
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: JSON.stringify({
+        phone: phone.value,
+        password: password.value,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error("Error something Api");
+    }
+    const data = await res.json();
+    console.log(data);
+    createAccount.reset();
+  } catch (error) {
+    console.error("Error", error);
+    console.log(error.message);
+  }
 });
 
 // !======================Sign In=========================
 
-const formSignIn = document.querySelector("#formSignIn");
+// const formSignIn = document.querySelector("#formSignIn");
 
-formSignIn.addEventListener("submit", async (event) => {
-  event.preventDefault();
+// formSignIn.addEventListener("submit", async (event) => {
+//   event.preventDefault();
 
-  const email = event.target[0].value,
-    password = event.target[1].value;
+//   const phone = event.target[0],
+//     password = event.target[1];
 
-  usersDB.forEach((user) => {
-    if (user.email == email && user.password == password) {
-      window.location.href = "../Page/landing.html";
-    } else {
-      alert("Wrong username or password");
-    }
-  });
-});
+//   try {
+//     const res = await fetch("https://bd.minimatch.uz/auth/login", {
+//       method: "POST",
+//       mode: "no-cors",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: {
+//         phone: phone.value,
+//         password: password.value,
+//       },
+//     });
+//     if (!res.ok) {
+//       const failed = document.querySelector("#failed");
+//       failed.style.borderColor = "red";
+//       throw new Error("Error something Api");
+//     }
+//     const data = await res.json();
+//     console.log(data);
+//     localStorage.setItem("token", data.token);
+//     location.href = "./index.html";
+//     formSignIn.reset();
+//   } catch (error) {
+//     console.error("Error", error);
+//   }
+// });
