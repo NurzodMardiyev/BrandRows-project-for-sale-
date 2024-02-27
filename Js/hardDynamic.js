@@ -6,7 +6,6 @@ const many = document.querySelector(".many");
 const counter__shop = document.querySelector(".counter__shop");
 
 const productDB = JSON.parse(localStorage.getItem("product")) || [];
-const basketDB = JSON.parse(localStorage.getItem("basket")) || [];
 
 adminForm.addEventListener("submit", async (event) => {
   const token = localStorage.getItem("token");
@@ -36,7 +35,6 @@ adminForm.addEventListener("submit", async (event) => {
       throw new Error("Error something Api");
     }
     const data = await res.json();
-    console.log(data);
     productDB.push(data);
     localStorage.setItem("product", JSON.stringify(productDB));
     renderFromAdmin();
@@ -48,7 +46,6 @@ adminForm.addEventListener("submit", async (event) => {
     console.log(localStorage.getItem("token"));
   }
 });
-console.log(productDB);
 
 // Create in Html from data basa
 
@@ -109,8 +106,13 @@ async function addBasket(id) {
     if (!res.ok) {
       throw new Error("Error something Api");
     }
-    const dataBT = res.json();
-    console.log(dataBT);
+    productDB.forEach((product) => {
+      if (product._id === id) {
+        basketRender(id);
+      }
+    });
+
+    localStorage.setItem("basket", JSON.stringify("res"));
   } catch {
     console.error("error");
   }
@@ -118,16 +120,16 @@ async function addBasket(id) {
 
 // Counter apply product
 
-let count = localStorage.getItem("count") || 0;
-function basketCount() {
-  count++;
-  localStorage.setItem("count", count);
-  counter__shop.innerHTML = count;
-}
+// let count = localStorage.getItem("count") || 0;
+// function basketCount() {
+//   count++;
+//   localStorage.setItem("count", count);
+//   counter__shop.innerHTML = count;
+// }
 
 // Basket render
-function basketRender() {
-  apply__products.innerHTML = "";
+function basketRender(id) {
+  // apply__products.innerHTML = "";
   productDB.forEach((product) => {
     const { name, images, price, _id } = product;
     const template = `
@@ -145,18 +147,18 @@ function basketRender() {
         <div>
           <h4 class="fs-6">${name}</h4>
           <div class="howMany">
-            <button class="btn btn-outline-success" onclick = "plusSale(${_id})">
+            <button class="btn btn-outline-success" onclick = "plusSale(${id})">
               <i class="fa fa-plus"></i>
             </button>
             <span class="many mx-1 fw-medium">1</span>
-            <button class="btn btn-outline-success" onclick = "minusSale(${_id})">
+            <button class="btn btn-outline-success" onclick = "minusSale(${id})">
               <i class="fa fa-minus"></i>
             </button>
           </div>
         </div>
         <div class="d-flex flex-column gap-0">
           <p class="app__price mb-1">${price}$</p>
-          <button type="button" class="btn btn-secondary" onclick = "deleteProduct('${_id}')">
+          <button type="button" class="btn btn-secondary" onclick = "deleteProduct('${id}')">
           <i class ="fa fa-trash" id="deleteProductFromApply"></i>
           </button>
         </div>
@@ -164,14 +166,12 @@ function basketRender() {
     </div>
     `;
 
-    if (true) {
+    if (product._id === id) {
       apply__products.innerHTML += template;
-      let counting = product.counting++;
-      localStorage.setItem("count", counting);
+      localStorage.setItem("count", id);
     }
   });
 }
-basketRender();
 
 // is Client going to sale how many product
 
@@ -218,6 +218,10 @@ async function deleteBasket(id) {
       },
     });
     if (!res.ok) {
+      productDB.splice(indexToDelete, 1);
+      localStorage.setItem("product", JSON.stringify(productDB));
+      renderFromAdmin();
+      basketRender();
       throw new Error("Error something Api");
     } else if (indexToDelete !== -1) {
       productDB.splice(indexToDelete, 1);
@@ -232,17 +236,19 @@ async function deleteBasket(id) {
   }
 }
 
-// function deleteProduct(_id) {
-//   let products = productDB.map((product) => {
-//     if (product._id == _id) {
-//       product.isBasket = false;
-//       basketRender();
-//     }
-//     return product;
-//   });
+function deleteProduct(id) {
+  const indexToDelete = basketDB.findIndex((product) => product._id === id);
 
-//   localStorage.setItem("product", JSON.stringify(products));
-// }
+  if (indexToDelete !== -1) {
+    basketDB.splice(indexToDelete, 1);
+    localStorage.setItem("product", JSON.stringify(basketDB));
+    basketRender(id);
+    console.log("name");
+  } else {
+    console.log(indexToDelete);
+    console.log("Element not found with ID:", id);
+  }
+}
 
 // Delete product from Html
 // function deleteBasket(_id) {
@@ -259,31 +265,58 @@ async function deleteBasket(id) {
 // }
 
 // Edit Basket
-function editBasket(id) {
-  let products = productDB.map((product) => {
-    if (product.id == id) {
-      // Edit product attributes
-      product.productName = prompt("Enter the new name", product.productName);
-      product.productQuentity = prompt(
-        "Enter the new quantity",
-        product.productQuentity
-      );
-      product.productPrice = prompt(
-        "Enter the new price",
-        product.productPrice
-      );
-      product.productImage1 = prompt(
-        "Enter the new image URL",
-        product.productImage1
-      );
+async function editBasket(id) {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`https://bd.minimatch.uz/products/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: prompt("enter name"),
+        images: [prompt("enter URL")],
+        description: prompt("enter desc"),
+        price: prompt("enter price"),
+      }),
+    });
+    if (!res.ok) {
+      throw new Error("Error something Api");
     }
-    return product;
-  });
-
-  localStorage.setItem("product", JSON.stringify(products));
-  basketRender();
-  renderFromAdmin();
+    const data = await res.json();
+    console.log(data);
+    console.log("success");
+  } catch {
+    console.error("error");
+  }
 }
+
+// function editBasket(id) {
+//   let products = productDB.map((product) => {
+//     if (product.id == id) {
+//       // Edit product attributes
+//       product.productName = prompt("Enter the new name", product.productName);
+//       product.productQuentity = prompt(
+//         "Enter the new quantity",
+//         product.productQuentity
+//       );
+//       product.productPrice = prompt(
+//         "Enter the new price",
+//         product.productPrice
+//       );
+//       product.productImage1 = prompt(
+//         "Enter the new image URL",
+//         product.productImage1
+//       );
+//     }
+//     return product;
+//   });
+
+//   localStorage.setItem("product", JSON.stringify(products));
+//   basketRender();
+//   renderFromAdmin();
+// }
 
 // Total price
 
@@ -298,4 +331,3 @@ function getTotalPrice() {
   return totalPrice;
 }
 const price = getTotalPrice();
-console.log(price);
