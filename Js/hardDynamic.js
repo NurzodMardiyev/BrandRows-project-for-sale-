@@ -6,9 +6,10 @@ const many = document.querySelector(".many");
 const counter__shop = document.querySelector(".counter__shop");
 
 const productDB = JSON.parse(localStorage.getItem("product")) || [];
+const basketDB = JSON.parse(localStorage.getItem("basket")) || [];
 
-let token = localStorage.getItem("token");
 adminForm.addEventListener("submit", async (event) => {
+  const token = localStorage.getItem("token");
   event.preventDefault();
   const productName = event.target[0],
     productImage1 = event.target[1],
@@ -70,7 +71,7 @@ function renderFromAdmin() {
           <p class="card-text text-bg-secondary">Description: ${description}</p>
           <button
             class="btn btn-success position-absolute card__delete"
-            onclick="deleteBasket(${_id})"
+            onclick="deleteBasket('${_id}')"
           >
             <i class="fa fa-trash"></i>
           </button>
@@ -96,17 +97,23 @@ function renderFromAdmin() {
 renderFromAdmin();
 
 // Basket \
-
-function addBasket(_id) {
-  const productsAdded = productDB.map((product) => {
-    if (product._id == _id) {
+async function addBasket(id) {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`https://bd.minimatch.uz/products/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Error something Api");
     }
-    localStorage.setItem("product", JSON.stringify(productsAdded));
-    // localStorage.setItem("productsInBasket", JSON.stringify(products));
-    basketRender();
-    basketCount();
-    return product;
-  });
+    const dataBT = res.json();
+    console.log(dataBT);
+  } catch {
+    console.error("error");
+  }
 }
 
 // Counter apply product
@@ -157,11 +164,11 @@ function basketRender() {
     </div>
     `;
 
-    // if (true) {
-    //   apply__products.innerHTML += template;
-    //   let counting = product.counting++;
-    //   localStorage.setItem("count", counting);
-    // }
+    if (true) {
+      apply__products.innerHTML += template;
+      let counting = product.counting++;
+      localStorage.setItem("count", counting);
+    }
   });
 }
 basketRender();
@@ -199,15 +206,22 @@ basketRender();
 
 // Delete product from Apply
 
-async function deleteBasket(_id) {
+async function deleteBasket(id) {
+  const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`https://bd.minimatch.uz/products/${_id}`, {
+    const res = await fetch(`https://bd.minimatch.uz/products/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!res.ok) {
+      throw new Error("Error something Api");
+    }
+    alert("success");
+    const data = await res.json();
+    console.log(data);
   } catch {
     console.error("error");
   }
