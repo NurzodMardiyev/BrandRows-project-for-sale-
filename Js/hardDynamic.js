@@ -7,48 +7,36 @@ const counter__shop = document.querySelector(".counter__shop");
 
 const productDB = JSON.parse(localStorage.getItem("product")) || [];
 
+let token = localStorage.getItem("token");
 adminForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const productName = event.target[0],
     productImage1 = event.target[1],
-    productPrice = event.target[4].value,
+    productPrice = event.target[4],
     productDesc = event.target[5];
 
   const productDBObj = {
-    id: productDB.length,
-    isBasket: false,
-    productName: productName.value,
-    productImage1: productImage1.value,
-    productPrice: productPrice,
-    productDesc: productDesc.value,
-    counting: localStorage.getItem("count") || 0,
+    name: productName.value,
+    images: [productImage1.value],
+    description: productDesc.value,
+    price: Number(productPrice.value),
   };
-  let token = localStorage.getItem("token");
-  // let token = JSON.parse(get);
-  console.log("Bearer " + token);
-  console.log(productName.value);
-  console.log(productPrice);
-  console.log(productDesc.value);
 
   try {
     const res = await fetch("https://bd.minimatch.uz/products", {
       method: "POST",
       headers: {
-        authorization: "Beader " + token,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        name: productName.value,
-        images: productImage1.value,
-        description: productDesc.value,
-        price: productPrice,
-      }),
+      body: JSON.stringify(productDBObj),
     });
     if (!res.ok) {
       throw new Error("Error something Api");
     }
     const data = await res.json();
     console.log(data);
-    productDB.push(productDBObj);
+    productDB.push(data);
     localStorage.setItem("product", JSON.stringify(productDB));
     renderFromAdmin();
     adminForm.reset();
@@ -59,6 +47,7 @@ adminForm.addEventListener("submit", async (event) => {
     console.log(localStorage.getItem("token"));
   }
 });
+console.log(productDB);
 
 // Create in Html from data basa
 
@@ -67,35 +56,34 @@ const productList = document.querySelector("#product__list");
 function renderFromAdmin() {
   productList.innerHTML = "";
   productDB.forEach((product) => {
-    const { productImage1, productName, productPrice, id, productQuentity } =
-      product;
+    const { name, images, description, _id, price } = product;
     const template = `
       <div class="card mt-3" style="width: 18rem">
         <img
-          src="${productImage1}"
+          src="${images}"
           class="card-img-top"
           alt="shoes"
         />
         <div class="card-body position-relative">
-          <h5 class="card-title">${productName}</h5>
-          <p class="card-text">${productPrice}$</p>
-          <p class="card-text text-bg-secondary">How many have: ${productQuentity}</p>
+          <h5 class="card-title">${name}</h5>
+          <p class="card-text">${price}$</p>
+          <p class="card-text text-bg-secondary">Description: ${description}</p>
           <button
             class="btn btn-success position-absolute card__delete"
-            onclick="deleteBasket(${id})"
+            onclick="deleteBasket(${_id})"
           >
             <i class="fa fa-trash"></i>
           </button>
           <button
             class="btn btn-success position-absolute card__edit"
-            onclick="editBasket('${id}')"
+            onclick="editBasket('${_id}')"
           >
             <i class="fa fa-pen-to-square"></i>
           </button>
           <button
             class="btn btn-success position-absolute card__basket"
             id="counter__plus"
-            onclick="addBasket('${id}')"
+            onclick="addBasket('${_id}')"
           >
             <i class="fa fa-basket-shopping"></i>
           </button>
@@ -109,18 +97,16 @@ renderFromAdmin();
 
 // Basket \
 
-function addBasket(id) {
-  let products = productDB.map((product) => {
-    if (product.id == id) {
-      product.isBasket = true;
+function addBasket(_id) {
+  const productsAdded = productDB.map((product) => {
+    if (product._id == _id) {
     }
+    localStorage.setItem("product", JSON.stringify(productsAdded));
+    // localStorage.setItem("productsInBasket", JSON.stringify(products));
+    basketRender();
+    basketCount();
     return product;
   });
-
-  localStorage.setItem("product", JSON.stringify(products));
-  // localStorage.setItem("productsInBasket", JSON.stringify(products));
-  basketRender();
-  basketCount();
 }
 
 // Counter apply product
@@ -136,7 +122,7 @@ function basketCount() {
 function basketRender() {
   apply__products.innerHTML = "";
   productDB.forEach((product) => {
-    const { productName, productImage1, productPrice, isBasket, id } = product;
+    const { name, images, price, _id } = product;
     const template = `
     <div
       class="app__product d-flex gap-2 align-items-center mt-2"
@@ -144,26 +130,26 @@ function basketRender() {
     >
       <a href="#" class="app__img">
         <img
-          src="${productImage1}"
+          src="${images}"
           alt=""
         />
       </a>
       <div class="app__info d-flex justify-content-between w-100">
         <div>
-          <h4 class="fs-6">${productName}</h4>
+          <h4 class="fs-6">${name}</h4>
           <div class="howMany">
-            <button class="btn btn-outline-success" onclick = "plusSale(${id})">
+            <button class="btn btn-outline-success" onclick = "plusSale(${_id})">
               <i class="fa fa-plus"></i>
             </button>
             <span class="many mx-1 fw-medium">1</span>
-            <button class="btn btn-outline-success" onclick = "minusSale(${id})">
+            <button class="btn btn-outline-success" onclick = "minusSale(${_id})">
               <i class="fa fa-minus"></i>
             </button>
           </div>
         </div>
         <div class="d-flex flex-column gap-0">
-          <p class="app__price mb-1">${productPrice}$</p>
-          <button type="button" class="btn btn-secondary" onclick = "deleteProduct('${id}')">
+          <p class="app__price mb-1">${price}$</p>
+          <button type="button" class="btn btn-secondary" onclick = "deleteProduct('${_id}')">
           <i class ="fa fa-trash" id="deleteProductFromApply"></i>
           </button>
         </div>
@@ -171,72 +157,87 @@ function basketRender() {
     </div>
     `;
 
-    if (isBasket) {
-      apply__products.innerHTML += template;
-      let counting = product.counting++;
-      localStorage.setItem("count", counting);
-    }
+    // if (true) {
+    //   apply__products.innerHTML += template;
+    //   let counting = product.counting++;
+    //   localStorage.setItem("count", counting);
+    // }
   });
 }
 basketRender();
 
 // is Client going to sale how many product
 
-let howSale = 1;
-function plusSale(id) {
-  howSale++;
-  if (howSale > 0) {
-    let products = productDB.map((product) => {
-      many.innerHTML = `${howSale}`;
-      return product;
-    });
-    console.log(howSale);
+// let howSale = 1;
+// function plusSale(_id) {
+//   howSale++;
+//   if (howSale > 0) {
+//     let products = productDB.map((product) => {
+//       many.innerHTML = `${howSale}`;
+//       return product;
+//     });
+//     console.log(howSale);
 
-    localStorage.setItem("product", JSON.stringify(products));
-  }
-}
-function minusSale(id) {
-  howSale--;
-  if (howSale == 0) {
-    let products = productDB.map((product) => {
-      if (product.id == id) {
-        product.isBasket = false;
-        basketRender();
-      }
-      many.innerHTML = `${howSale}`;
-      return product;
-    });
+//     localStorage.setItem("product", JSON.stringify(products));
+//   }
+// }
+// function minusSale(_id) {
+//   howSale--;
+//   if (howSale == 0) {
+//     let products = productDB.map((product) => {
+//       if (product.id == id) {
+//         product.isBasket = false;
+//         basketRender();
+//       }
+//       many.innerHTML = `${howSale}`;
+//       return product;
+//     });
 
-    localStorage.setItem("product", JSON.stringify(products));
-  }
-}
+//     localStorage.setItem("product", JSON.stringify(products));
+//   }
+// }
 
 // Delete product from Apply
-function deleteProduct(id) {
-  let products = productDB.map((product) => {
-    if (product.id == id) {
-      product.isBasket = false;
-      basketRender();
-    }
-    return product;
-  });
 
-  localStorage.setItem("product", JSON.stringify(products));
-}
-
-// Delete product from Html
-function deleteBasket(id) {
-  const indexToDelete = productDB.findIndex((product) => product.id === id);
-
-  if (indexToDelete !== -1) {
-    productDB.splice(indexToDelete, 1);
-    localStorage.setItem("product", JSON.stringify(productDB));
-    renderFromAdmin();
-    basketRender();
-  } else {
-    console.log("Element not found with ID:", id);
+async function deleteBasket(_id) {
+  try {
+    const res = await fetch(`https://bd.minimatch.uz/products/${_id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch {
+    console.error("error");
   }
 }
+
+// function deleteProduct(_id) {
+//   let products = productDB.map((product) => {
+//     if (product._id == _id) {
+//       product.isBasket = false;
+//       basketRender();
+//     }
+//     return product;
+//   });
+
+//   localStorage.setItem("product", JSON.stringify(products));
+// }
+
+// Delete product from Html
+// function deleteBasket(_id) {
+//   const indexToDelete = productDB.findIndex((product) => product._id === _id);
+
+//   if (indexToDelete !== -1) {
+//     productDB.splice(indexToDelete, 1);
+//     localStorage.setItem("product", JSON.stringify(productDB));
+//     renderFromAdmin();
+//     basketRender();
+//   } else {
+//     console.log("Element not found with ID:", _id);
+//   }
+// }
 
 // Edit Basket
 function editBasket(id) {
