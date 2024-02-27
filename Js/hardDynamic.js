@@ -207,6 +207,7 @@ basketRender();
 // Delete product from Apply
 
 async function deleteBasket(id) {
+  const indexToDelete = productDB.findIndex((product) => product._id === id);
   const token = localStorage.getItem("token");
   try {
     const res = await fetch(`https://bd.minimatch.uz/products/${id}`, {
@@ -218,10 +219,14 @@ async function deleteBasket(id) {
     });
     if (!res.ok) {
       throw new Error("Error something Api");
+    } else if (indexToDelete !== -1) {
+      productDB.splice(indexToDelete, 1);
+      localStorage.setItem("product", JSON.stringify(productDB));
+      renderFromAdmin();
+      basketRender();
+    } else {
+      console.log("Element not found with ID:", _id);
     }
-    alert("success");
-    const data = await res.json();
-    console.log(data);
   } catch {
     console.error("error");
   }
